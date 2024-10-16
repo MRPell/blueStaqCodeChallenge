@@ -1,9 +1,12 @@
 <mat-expansion-panel
   (opened)="panelOpenState.set(true)"
   (closed)="panelOpenState.set(false)"
+  hideToggle
 >
   <mat-expansion-panel-header>
     <mat-panel-title> {{ poem.title }} </mat-panel-title>
+    <!-- <mat-icon>my_library_books</mat-icon> -->
+    <mat-icon>import_contacts</mat-icon>
     <mat-panel-description> By {{ poem.author }} </mat-panel-description>
   </mat-expansion-panel-header>
   @for (line of poem.lines; track $index) {

@@ -8,20 +8,18 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { AuthorSelectorComponent } from './components/author-selector/author-selector.component';
 import { PoetryService } from './poetry.service';
 import { LogService } from './../../shared/log.service';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { PoemPageComponent } from './components/poem-page/poem-page.component';
-import { TitleSelectorComponent } from './components/title-selector/title-selector.component';
 
 /**
  * PoetryExplorerModule is responsible for providing components and services
  * related to poetry exploration.
  */
 @NgModule({
-  declarations: [AuthorSelectorComponent, TitleSelectorComponent, PoemDetailComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent],
+  declarations: [PoemDetailComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -34,7 +32,7 @@ import { TitleSelectorComponent } from './components/title-selector/title-select
     MatAutocompleteModule
   ],
   providers: [PoetryService, LogService],
-  exports: [AuthorSelectorComponent, PoemDetailComponent, TitleSelectorComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent]
+  exports: [PoemDetailComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent]
 })
 export class PoetryExplorerModule {
   constructor(private log: LogService) {

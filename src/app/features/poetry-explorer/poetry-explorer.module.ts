@@ -1,3 +1,4 @@
+import { PoemSearchFormComponent } from './components/poem-search-form/poem-search-form.component';
 import { PoemListComponent } from './components/poem-list/poem-list.component';
 import { PoemDetailComponent } from './components/poem-detail-component/poem-detail.component';
 import { MatIcon } from '@angular/material/icon';
@@ -19,7 +20,7 @@ import { PoemPageComponent } from './components/poem-page/poem-page.component';
  * related to poetry exploration.
  */
 @NgModule({
-  declarations: [AuthorSelectorComponent, PoemDetailComponent, PoemListComponent, PoemPageComponent],
+  declarations: [AuthorSelectorComponent, PoemDetailComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -32,7 +33,7 @@ import { PoemPageComponent } from './components/poem-page/poem-page.component';
     MatAutocompleteModule
   ],
   providers: [PoetryService, LogService],
-  exports: [AuthorSelectorComponent, PoemDetailComponent, PoemListComponent, PoemPageComponent]
+  exports: [AuthorSelectorComponent, PoemDetailComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent]
 })
 export class PoetryExplorerModule {
   constructor(private log: LogService) {

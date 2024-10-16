@@ -1,1 +1,12 @@
-<p>poem-search-form works!</p>
+<form [formGroup]="poemForm" (ngSubmit)="handleSubmit()">
+  <author-selector [formControl]="poemForm.controls['author']" />
+
+  <app-title-selector
+    [author]="author"
+    [formControl]="poemForm.controls['title']"
+  />
+
+  <button mat-raised-button type="submit" [disabled]="!isInputValid()">
+    Submit
+  </button>
+</form>

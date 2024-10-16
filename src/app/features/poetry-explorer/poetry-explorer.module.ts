@@ -14,13 +14,14 @@ import { LogService } from './../../shared/log.service';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { PoemPageComponent } from './components/poem-page/poem-page.component';
+import { TitleSelectorComponent } from './components/title-selector/title-selector.component';
 
 /**
  * PoetryExplorerModule is responsible for providing components and services
  * related to poetry exploration.
  */
 @NgModule({
-  declarations: [AuthorSelectorComponent, PoemDetailComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent],
+  declarations: [AuthorSelectorComponent, TitleSelectorComponent, PoemDetailComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent],
   imports: [
     CommonModule,
     FormsModule,
@@ -33,7 +34,7 @@ import { PoemPageComponent } from './components/poem-page/poem-page.component';
     MatAutocompleteModule
   ],
   providers: [PoetryService, LogService],
-  exports: [AuthorSelectorComponent, PoemDetailComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent]
+  exports: [AuthorSelectorComponent, PoemDetailComponent, TitleSelectorComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent]
 })
 export class PoetryExplorerModule {
   constructor(private log: LogService) {

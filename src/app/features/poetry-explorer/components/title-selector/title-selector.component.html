@@ -1,0 +1,28 @@
+<mat-form-field class="example-full-width">
+  <mat-label>Poem Title</mat-label>
+  <input
+    type="text"
+    placeholder="Select a title"
+    aria-label="Poem Title"
+    matInput
+    [formControl]="formControl"
+    [matAutocomplete]="autoPoemTitle"
+  />
+  <button
+    mat-icon-button
+    matSuffix
+    *ngIf="formControl.value"
+    (click)="formControl.reset()"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+  <mat-autocomplete #autoPoemTitle="matAutocomplete">
+    @for (mapEntry of filteredPoemTitleOptions$ | async; track mapEntry[0]) {
+    <mat-optgroup [label]="mapEntry[0]">
+      @for (title of mapEntry[1]; track title) {
+      <mat-option [value]="title">{{ title }}</mat-option>
+      }
+    </mat-optgroup>
+    }
+  </mat-autocomplete>
+</mat-form-field>

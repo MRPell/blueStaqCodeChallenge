@@ -1,1 +1,13 @@
-<p>poem-detail-component works!</p>
+<mat-expansion-panel
+  (opened)="panelOpenState.set(true)"
+  (closed)="panelOpenState.set(false)"
+>
+  <mat-expansion-panel-header>
+    <mat-panel-title> {{ poem.title }} </mat-panel-title>
+    <mat-panel-description> By {{ poem.author }} </mat-panel-description>
+  </mat-expansion-panel-header>
+  @for (line of poem.lines; track $index) {
+  <p>{{ line }}</p>
+
+  }
+</mat-expansion-panel>

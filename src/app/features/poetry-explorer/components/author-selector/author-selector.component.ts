@@ -1,5 +1,6 @@
+import { Poem } from './../../models';
 import { LogService } from './../../../../shared/log.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
@@ -23,6 +24,8 @@ export class AuthorSelectorComponent implements OnInit {
   poemTitleGroups: Map<string, string[]> = new Map();
 
   constructor(private poetryService: PoetryService, private logger: LogService) { }
+
+  @Output() poemsRetrieved = new EventEmitter<Poem[]>();
 
 
   ngOnInit() {
@@ -155,6 +158,7 @@ export class AuthorSelectorComponent implements OnInit {
       title: this.poemTitleControl.value ?? undefined,
       author: this.authorControl.value ?? undefined
     }).subscribe((poems) => {
+      this.poemsRetrieved.emit(poems);
       this.logger.info('Poems loaded successfully', poems);
     });
   }

@@ -1,4 +1,4 @@
-<h3>Poems</h3>
+<h3>{{ poems?.length }} Poems Found</h3>
 @for (poem of poems; track poem.title) {
 <app-poem-detail-component [poem]="poem"></app-poem-detail-component>
 }

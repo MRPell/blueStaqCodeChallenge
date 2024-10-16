@@ -1,2 +1,2 @@
-<author-selector> </author-selector>
-<app-poem-list></app-poem-list>
+<author-selector (poemsRetrieved)="onPoemsRetrieved($event)"> </author-selector>
+<app-poem-list [poems]="poems$ | async"></app-poem-list>

@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { Poem, AuthorResponse, TitleResponse } from './models';
+import { ErrorObject } from '../../shared/error-display/error-display.component';
 
 @Injectable({
   providedIn: 'root'
@@ -91,18 +92,19 @@ export class PoetryService {
   private validateResponse<T extends object>(response: T): T {
     if ('status' in response && (response as any)['status'] !== 200) {
       console.warn('Response status is not 200', response);
-      throw new Error(`Error: Response status is ${(response as any)['status']}`);
+
+      throw new HttpErrorResponse({ status: (response as any)['status'], statusText: (response as any)['reason'] ?? 'Unknown' });
     }
     return response;
   }
 
   private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'Unknown error!';
-    if (error.error instanceof ErrorEvent) {
-      errorMessage = `Error: ${error.error.message}`;
-    } else {
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    return throwError(() => new Error(errorMessage));
+    const errorMessage = error instanceof HttpErrorResponse
+      ? error.statusText
+      : `An Error occurred`;
+    return throwError(() => ({
+      message: errorMessage,
+      originalError: error,
+    } as ErrorObject));
   }
 }

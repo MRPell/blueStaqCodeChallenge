@@ -12,7 +12,7 @@ import { LogService } from './../../../../shared/log.service';
 })
 export class PoemListComponent implements OnChanges {
 
-  @Input() poems: Poem[] | null = [];
+  @Input() poems: Poem[] | null = null;
 
   constructor(private logger: LogService) { }
 

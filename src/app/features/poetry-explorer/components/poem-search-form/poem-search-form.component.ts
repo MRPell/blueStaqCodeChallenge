@@ -11,13 +11,14 @@ import { BehaviorSubject, catchError, iif, map, Observable, of, startWith, tap }
   styleUrls: ['./poem-search-form.component.scss']
 })
 export class PoemSearchFormComponent implements OnInit {
-  private authorOptions: string[] = [];
   @Output() loading = new EventEmitter<boolean>();
-  private authorTitles: string[] = [];
-  private poemTitleGroups = new Map<string, string[]>();
+  @Output() error = new EventEmitter<any>();
   filteredAuthorOptions$: Observable<string[]> = new Observable();
   private filteredPoemTitleSubject = new BehaviorSubject<Map<string, string[]>>(new Map());
   filteredPoemTitleOptions$ = this.filteredPoemTitleSubject.asObservable();
+  private authorOptions: string[] = [];
+  private authorTitles: string[] = [];
+  private poemTitleGroups = new Map<string, string[]>();
 
   constructor(private poetryService: PoetryService, private logger: LogService) { }
 
@@ -65,7 +66,12 @@ export class PoemSearchFormComponent implements OnInit {
           this.poemsRetrieved.emit(poems);
           this.logger.info('Poems loaded successfully', poems);
         },
-        error: err => this.logger.warning('Failed to load poems', err),
+        error: err => {
+          this.error.emit(err);
+          this.loading.emit(false);
+          this.logger.warning('Failed to load poems', err);
+          return err;
+        },
         complete: () => this.loading.emit(false)
       });
   }

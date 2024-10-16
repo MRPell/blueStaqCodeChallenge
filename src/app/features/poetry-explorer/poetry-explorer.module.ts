@@ -14,6 +14,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { PoemPageComponent } from './components/poem-page/poem-page.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ErrorDisplayComponent } from "../../shared/error-display/error-display.component";
 
 /**
  * PoetryExplorerModule is responsible for providing components and services
@@ -31,7 +32,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatProgressSpinnerModule,
     MatIcon,
     MatListModule,
-    MatAutocompleteModule
+    MatAutocompleteModule,
+    ErrorDisplayComponent
   ],
   providers: [PoetryService, LogService],
   exports: [PoemDetailComponent, PoemListComponent, PoemPageComponent, PoemSearchFormComponent]

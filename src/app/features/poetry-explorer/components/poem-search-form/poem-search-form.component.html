@@ -1,5 +1,5 @@
-<form [formGroup]="poemForm" (ngSubmit)="handleSubmit()">
-  <mat-form-field class="example-full-width">
+<form [formGroup]="poemForm" (ngSubmit)="handleSubmit()" class="poem-form">
+  <mat-form-field class="full-width">
     <mat-label>Author</mat-label>
     <input
       type="text"
@@ -14,10 +14,11 @@
       matSuffix
       *ngIf="authorControl.value"
       (click)="authorControl.reset()"
+      class="close-button"
     >
       <mat-icon>close</mat-icon>
     </button>
-    <mat-error *ngIf="!authorControl.valid"> Not an availble author </mat-error>
+    <mat-error *ngIf="!authorControl.valid">Not an available author</mat-error>
     <mat-autocomplete #auto="matAutocomplete">
       @for (option of filteredAuthorOptions$ | async; track option) {
       <mat-option [value]="option">{{ option }}</mat-option>
@@ -25,7 +26,7 @@
     </mat-autocomplete>
   </mat-form-field>
 
-  <mat-form-field class="example-full-width">
+  <mat-form-field class="full-width">
     <mat-label>Poem Title</mat-label>
     <input
       type="text"
@@ -40,6 +41,7 @@
       matSuffix
       *ngIf="titleControl.value"
       (click)="titleControl.reset()"
+      class="close-button"
     >
       <mat-icon>close</mat-icon>
     </button>
@@ -59,7 +61,12 @@
     </mat-autocomplete>
   </mat-form-field>
 
-  <button mat-raised-button type="submit" [disabled]="!isInputValid()">
+  <button
+    mat-raised-button
+    type="submit"
+    [disabled]="!isInputValid()"
+    class="submit-button"
+  >
     Submit
   </button>
 </form>

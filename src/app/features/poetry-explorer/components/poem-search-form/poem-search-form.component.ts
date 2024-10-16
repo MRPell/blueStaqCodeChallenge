@@ -15,8 +15,8 @@ export class PoemSearchFormComponent implements OnInit {
   private authorTitles: string[] = [];
   private poemTitleGroups = new Map<string, string[]>();
   filteredAuthorOptions$: Observable<string[]> = new Observable();
-  private filteredPoemTitleSubject: BehaviorSubject<Map<string, string[]>> = new BehaviorSubject(new Map<string, string[]>());
-  filteredPoemTitleOptions$: Observable<Map<string, string[]>> = this.filteredPoemTitleSubject.asObservable();
+  private filteredPoemTitleSubject = new BehaviorSubject<Map<string, string[]>>(new Map());
+  filteredPoemTitleOptions$ = this.filteredPoemTitleSubject.asObservable();
 
   constructor(private poetryService: PoetryService, private logger: LogService) { }
 
@@ -33,27 +33,24 @@ export class PoemSearchFormComponent implements OnInit {
   });
 
   authorValidator(control: AbstractControl) {
-    if (this.authorOptions.length === 0 || !control.value) return null;
-    return this.authorOptions?.includes(control.value) ? null : { invalidAuthor: true };
+    return !control.value || this.authorOptions.includes(control.value) ? null : { invalidAuthor: true };
   }
 
   titleValidator(control: AbstractControl) {
-    if (this.authorTitles.length === 0 || !control.value) return null;
-    return this.authorTitles.includes(control.value) ? null : { invalidAuthor: true };
+    return !control.value || this.authorTitles.includes(control.value) ? null : { invalidTitle: true };
   }
 
-  get authorControl(): FormControl {
+  get authorControl() {
     return this.poemForm.get('author') as FormControl;
   }
 
-  get titleControl(): FormControl {
+  get titleControl() {
     return this.poemForm.get('title') as FormControl;
   }
 
   @Output() poemsRetrieved = new EventEmitter<Poem[]>();
 
   isInputValid(): boolean {
-
     return this.poemForm.valid && (this.authorControl.value || this.titleControl.value);
   }
 
@@ -95,87 +92,49 @@ export class PoemSearchFormComponent implements OnInit {
   }
 
   private categorizeTitlesByInitialLetter(titles: string[]): Map<string, string[]> {
-    const titleGroups = new Map<string, string[]>();
-    titles.forEach(title => {
-      if (title) {
-        const initialLetter = title.match(/[a-zA-Z]/)?.[0]?.toUpperCase() || 'OTHER';
-        const group = titleGroups.get(initialLetter) || [];
-        titleGroups.set(initialLetter, [...group, title]);
-      }
-    });
-    return new Map([...titleGroups.entries()].sort());
+    return titles.reduce((groups, title) => {
+      const initialLetter = title.match(/[a-zA-Z]/)?.[0]?.toUpperCase() || 'OTHER';
+      groups.set(initialLetter, [...(groups.get(initialLetter) || []), title]);
+      return groups;
+    }, new Map<string, string[]>());
   }
 
   private filterPoemTitles(searchTerms: string[] | null): Map<string, string[]> {
-
-    if (!searchTerms || searchTerms.length === 0) {
-      return this.poemTitleGroups;
-    }
-
-    if (searchTerms.length > 1) {
-      const categorized = this.categorizeTitlesByInitialLetter(searchTerms);
-      return categorized;
-    }
-
-    const flattenedOptions = Array.from(this.poemTitleGroups.values()).flat();
-    const filteredOptions = this.filterOptions(searchTerms[0], flattenedOptions);
-
+    if (!searchTerms || searchTerms.length === 0) return this.poemTitleGroups;
+    const filteredOptions = this.filterOptions(searchTerms[0], Array.from(this.poemTitleGroups.values()).flat());
     return this.categorizeTitlesByInitialLetter(filteredOptions);
   }
 
-  /**
-   * Sets up the author selection process by subscribing to changes in the author control.
-   * Fetches and filters titles based on the selected author.
-   */
   private initializeAuthorSelection(): void {
     this.logger.info('Initializing author selection');
-
     this.authorControl.valueChanges.subscribe(selectedAuthor => {
       this.logger.info(`Selected author: ${selectedAuthor}`);
-
       this.fetchAndProcessTitles(selectedAuthor);
     });
   }
 
-  /**
-   * Fetches titles for the selected author and processes them.
-   * @param author - The author for whom to fetch titles.
-   */
   private fetchAndProcessTitles(author: string): void {
     this.logger.info('Fetching titles based on author input');
-
     this.filteredPoemTitleOptions$ = iif(
-      () => (author?.trim() ?? '') !== '',
+      () => author.trim() !== '',
       this.poetryService.getTitlesByAuthor(author).pipe(
         tap(titles => this.logger.info('Titles fetched successfully', titles)),
         map(titles => {
           this.authorTitles = titles;
           return this.filterPoemTitles(titles);
         }),
-        tap(filteredTitles => this.logger.info('Filtered titles', filteredTitles)),
-        map(filteredTitles => new Map(filteredTitles)),
         catchError(err => {
           this.logger.warning('Failed to load titles', err);
           return of(new Map<string, string[]>());
         })
       ),
       of(this.poemTitleGroups).pipe(
-        tap(titles => this.logger.info('Default titles loaded', titles)),
-        map(titleGroups => { return titleGroups; }),
-
-        map(filteredTitles => new Map(filteredTitles))
+        tap(titles => this.logger.info('Default titles loaded', titles))
       )
     );
   }
 
-  private getDefaultTitles(): string[] {
-    // Return your default array of titles here
-    return ['Default Title 1', 'Default Title 2', 'Default Title 3'];
-  }
-
   private filterOptions(value: string | null, options: string[]): string[] {
-    if (!value) return options;
-    const filterValue = value.toLowerCase();
-    return options.filter(option => option.toLowerCase().includes(filterValue));
+    return options.filter(option => option.toLowerCase().includes(value?.toLowerCase() || ''));
   }
 }

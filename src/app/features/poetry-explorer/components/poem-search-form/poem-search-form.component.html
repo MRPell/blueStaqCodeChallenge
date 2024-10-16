@@ -43,9 +43,10 @@
       <mat-icon>close</mat-icon>
     </button>
     <mat-autocomplete #autoPoemTitle="matAutocomplete">
-      @for (mapEntry of filteredPoemTitleOptions$ | async; track mapEntry[0]) {
-      <mat-optgroup [label]="mapEntry[0]">
-        @for (title of mapEntry[1]; track title) {
+      @for (mapEntry of filteredPoemTitleOptions$ | async | keyvalue; track
+      mapEntry.key) {
+      <mat-optgroup [label]="mapEntry.key">
+        @for (title of mapEntry.value; track title) {
         <mat-option [value]="title">{{ title }}</mat-option>
         }
       </mat-optgroup>

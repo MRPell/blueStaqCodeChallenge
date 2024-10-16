@@ -10,7 +10,7 @@ import { Poem, AuthorResponse, TitleResponse } from './models';
 export class PoetryService {
   private readonly apiUrl = 'https://poetrydb.org';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   /**
    * Retrieves a list of authors.
@@ -29,8 +29,9 @@ export class PoetryService {
    * @returns An Observable of an array of titles.
    */
   getTitlesByAuthor(author: string): Observable<string[]> {
-    return this.http.get<string[]>(`${this.apiUrl}/author/${author}/title`).pipe(
+    return this.http.get<Poem[]>(`${this.apiUrl}/author/${author}/title`).pipe(
       map(this.validateResponse),
+      map((poems: Poem[]) => poems.map(poem => poem.title)),
       catchError(this.handleError)
     );
   }

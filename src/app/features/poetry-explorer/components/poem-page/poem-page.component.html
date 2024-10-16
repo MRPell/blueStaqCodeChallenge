@@ -1,4 +1,9 @@
 <app-poem-search-form
   (poemsRetrieved)="onPoemsRetrieved($event)"
+  (loading)="onLoading($event)"
 ></app-poem-search-form>
+@if (loading){
+<mat-spinner></mat-spinner> }@else {
+
 <app-poem-list [poems]="poems$ | async"></app-poem-list>
+}

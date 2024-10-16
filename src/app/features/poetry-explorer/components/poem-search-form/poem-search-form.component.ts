@@ -3,7 +3,7 @@ import { AbstractControl, FormControl, FormGroup } from '@angular/forms';
 import { Poem } from '../../models';
 import { PoetryService } from '../../poetry.service';
 import { LogService } from '../../../../shared/log.service';
-import { BehaviorSubject, catchError, EMPTY, iif, map, Observable, of, startWith, tap } from 'rxjs';
+import { BehaviorSubject, catchError, iif, map, Observable, of, startWith, tap } from 'rxjs';
 
 @Component({
   selector: 'app-poem-search-form',
@@ -12,6 +12,7 @@ import { BehaviorSubject, catchError, EMPTY, iif, map, Observable, of, startWith
 })
 export class PoemSearchFormComponent implements OnInit {
   private authorOptions: string[] = [];
+  @Output() loading = new EventEmitter<boolean>();
   private authorTitles: string[] = [];
   private poemTitleGroups = new Map<string, string[]>();
   filteredAuthorOptions$: Observable<string[]> = new Observable();
@@ -56,10 +57,16 @@ export class PoemSearchFormComponent implements OnInit {
 
   handleSubmit(): void {
     const { title, author } = this.poemForm.value;
-    this.poetryService.getPoemsByFilters({ title: title ?? undefined, author: author ?? undefined })
-      .subscribe(poems => {
-        this.poemsRetrieved.emit(poems);
-        this.logger.info('Poems loaded successfully', poems);
+    this.loading.emit(true);
+
+    this.poetryService.getPoemsByFilters({ title: title || undefined, author: author || undefined })
+      .subscribe({
+        next: poems => {
+          this.poemsRetrieved.emit(poems);
+          this.logger.info('Poems loaded successfully', poems);
+        },
+        error: err => this.logger.warning('Failed to load poems', err),
+        complete: () => this.loading.emit(false)
       });
   }
 
@@ -81,6 +88,7 @@ export class PoemSearchFormComponent implements OnInit {
     this.poetryService.getTitles().subscribe({
       next: ({ titles }) => {
         this.poemTitleGroups = this.categorizeTitlesByInitialLetter(titles);
+        this.authorTitles = this.getTitles(this.poemTitleGroups);
         this.logger.info('Titles loaded successfully', titles);
         this.filteredPoemTitleOptions$ = this.titleControl.valueChanges.pipe(
           startWith(''),
@@ -101,8 +109,16 @@ export class PoemSearchFormComponent implements OnInit {
 
   private filterPoemTitles(searchTerms: string[] | null): Map<string, string[]> {
     if (!searchTerms || searchTerms.length === 0) return this.poemTitleGroups;
-    const filteredOptions = this.filterOptions(searchTerms[0], Array.from(this.poemTitleGroups.values()).flat());
+    if (searchTerms.length > 1) {
+
+      return this.categorizeTitlesByInitialLetter(searchTerms);
+    }
+    const filteredOptions = this.filterOptions(searchTerms[0], this.getTitles(this.poemTitleGroups));
     return this.categorizeTitlesByInitialLetter(filteredOptions);
+  }
+
+  private getTitles(titleMap: Map<string, string[]>): string[] {
+    return Array.from(titleMap.values()).flat();
   }
 
   private initializeAuthorSelection(): void {
@@ -116,11 +132,12 @@ export class PoemSearchFormComponent implements OnInit {
   private fetchAndProcessTitles(author: string): void {
     this.logger.info('Fetching titles based on author input');
     this.filteredPoemTitleOptions$ = iif(
-      () => author.trim() !== '',
+      () => (author?.trim() ?? '') !== '',
       this.poetryService.getTitlesByAuthor(author).pipe(
         tap(titles => this.logger.info('Titles fetched successfully', titles)),
         map(titles => {
           this.authorTitles = titles;
+          this.resetTitleIfInvalid();
           return this.filterPoemTitles(titles);
         }),
         catchError(err => {
@@ -129,9 +146,17 @@ export class PoemSearchFormComponent implements OnInit {
         })
       ),
       of(this.poemTitleGroups).pipe(
-        tap(titles => this.logger.info('Default titles loaded', titles))
-      )
+        tap(titles => {
+          this.authorTitles = this.getTitles(this.poemTitleGroups);
+          this.resetTitleIfInvalid();
+          return;
+        }))
     );
+  }
+
+  private resetTitleIfInvalid() {
+    this.titleControl.updateValueAndValidity();
+    if (this.titleControl.invalid) { this.titleControl.reset(); }
   }
 
   private filterOptions(value: string | null, options: string[]): string[] {

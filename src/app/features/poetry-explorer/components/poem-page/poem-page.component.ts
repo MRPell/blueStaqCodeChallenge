@@ -10,6 +10,8 @@ import { LogService } from './../../../../shared/log.service';
 })
 export class PoemPageComponent {
   private poemsSubject = new BehaviorSubject<Poem[]>([]);
+
+  loading = false;
   poems$ = this.poemsSubject.asObservable();
 
   constructor(private logger: LogService) { }
@@ -21,5 +23,10 @@ export class PoemPageComponent {
   onPoemsRetrieved(poems: Poem[]): void {
     this.logger.info('Updating poems list', poems);
     this.poemsSubject.next(poems);
+  }
+
+  onLoading(loading: boolean): void {
+    this.logger.info('Form loading', loading);
+    this.loading = loading;
   }
 }

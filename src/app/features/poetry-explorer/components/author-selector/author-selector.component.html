@@ -1,0 +1,64 @@
+<form class="example-form">
+  <mat-form-field class="example-full-width">
+    <mat-label>Author</mat-label>
+    <input
+      type="text"
+      placeholder="Pick one"
+      aria-label="Author"
+      matInput
+      [formControl]="authorControl"
+      [matAutocomplete]="auto"
+    />
+    <button
+      mat-icon-button
+      matSuffix
+      *ngIf="authorControl.value"
+      (click)="authorControl.reset()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <mat-autocomplete #auto="matAutocomplete">
+      @for (option of filteredAuthorOptions$ | async; track option) {
+      <mat-option [value]="option">{{ option }}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <mat-form-field class="example-full-width">
+    <mat-label>Poem Title</mat-label>
+    <input
+      type="text"
+      placeholder="Select a title"
+      aria-label="Poem Title"
+      matInput
+      [formControl]="poemTitleControl"
+      [matAutocomplete]="autoPoemTitle"
+    />
+    <button
+      mat-icon-button
+      matSuffix
+      *ngIf="poemTitleControl.value"
+      (click)="poemTitleControl.reset()"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+    <mat-autocomplete #autoPoemTitle="matAutocomplete">
+      @for (mapEntry of filteredPoemTitleOptions$ | async; track mapEntry[0]) {
+      <mat-optgroup [label]="mapEntry[0]">
+        @for (title of mapEntry[1]; track title) {
+        <mat-option [value]="title">{{ title }}</mat-option>
+        }
+      </mat-optgroup>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
+
+  <button
+    mat-raised-button
+    type="submit"
+    (click)="SearchPoetryDb()"
+    [disabled]="!isInputValid()"
+  >
+    Submit
+  </button>
+</form>

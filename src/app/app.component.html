@@ -5,11 +5,6 @@
 </style>
 <main class="main">
   <div class="search-container">
-    <input type="text" [(ngModel)]="authorName" placeholder="Author Name" />
-    <input type="text" [(ngModel)]="title" placeholder="Title" />
-    <button (click)="performSearch()">Search</button>
-  </div>
-  <div>
-    <p>Search Result: {{ searchResult }}</p>
+    <author-selector></author-selector>
   </div>
 </main>

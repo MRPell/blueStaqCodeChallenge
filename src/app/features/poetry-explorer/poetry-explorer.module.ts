@@ -13,7 +13,7 @@ import { LogService } from './../../shared/log.service';
 import { MatListModule } from '@angular/material/list';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { PoemPageComponent } from './components/poem-page/poem-page.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { ErrorDisplayComponent } from "../../shared/error-display/error-display.component";
 
 /**
@@ -29,7 +29,8 @@ import { ErrorDisplayComponent } from "../../shared/error-display/error-display.
     MatFormFieldModule,
     MatInputModule,
     MatExpansionModule,
-    MatProgressSpinnerModule,
+    MatProgressBarModule,
+
     MatIcon,
     MatListModule,
     MatAutocompleteModule,

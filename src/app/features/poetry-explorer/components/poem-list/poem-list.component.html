@@ -1,8 +1,18 @@
-<h3>
-  @if ((poems?.length??-1) <0){ } @else {
-  {{ poems!.length > 0 ? poems!.length + " Poems Found" : "No Poems Found" }}
-  }
-</h3>
-@for (poem of poems??[]; track poem.title) {
-<app-poem-detail-component [poem]="poem"></app-poem-detail-component>
-}
+<section class="poem-list-container">
+  <header>
+    <h3>
+      @if ((poems?.length??-1) <0){ } @else {
+      {{
+        poems!.length > 0 ? poems!.length + " Poems Found" : "No Poems Found"
+      }}
+      }
+    </h3>
+  </header>
+  <ul class="poem-list">
+    @for (poem of poems??[]; track poem.title) {
+    <li class="poem-item">
+      <app-poem-detail-component [poem]="poem"></app-poem-detail-component>
+    </li>
+    }
+  </ul>
+</section>

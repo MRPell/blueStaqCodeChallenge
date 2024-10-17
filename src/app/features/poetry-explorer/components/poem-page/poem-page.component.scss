@@ -1,0 +1,64 @@
+.page-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding:  20px 0px;
+  background-color: var(--background-color);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.content-container {
+  background-color: var(--background-color);
+  width: 75%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+h1 {
+  color: var(--text-color);
+  margin-bottom: 30px;
+  font-family:'Poiret One', cursive;
+  font-weight: var(--header-font-weight, bold);
+  font-size:  4em;
+  text-align: center;
+  transition: color 0.3s ease;
+}
+
+.poem-form-container {
+  width: 100%;
+  margin-top: 20px;
+  padding: 15px;
+  background-color: var(--primary-color);
+  border-radius:   8px 8px 0 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+.results-container {
+  width: 100%;
+  padding: 15px;
+  background-color: var(--primary-color);
+    border-radius: 0 0 8px 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+
+}

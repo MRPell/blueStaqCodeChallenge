@@ -15,6 +15,7 @@ export class PoemPageComponent {
   private poemsSubject = new BehaviorSubject<Poem[]>([]);
 
   loading = false;
+  hasContent = false;
   error: any;
   poems$ = this.poemsSubject.asObservable();
 
@@ -26,6 +27,9 @@ export class PoemPageComponent {
    */
   onPoemsRetrieved($event: Poem[]): void {
     this.logger.info('Updating poems list', $event);
+    if ($event.length > 0) {
+      this.hasContent = true;
+    }
     this.poemsSubject.next($event);
     this.error = null;
   }

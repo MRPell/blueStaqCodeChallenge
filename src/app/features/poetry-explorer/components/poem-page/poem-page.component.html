@@ -1,12 +1,24 @@
-<app-poem-search-form
-  (poemsRetrieved)="onPoemsRetrieved($event)"
-  (loading)="onLoading($event)"
-  (error)="onError($event)"
-></app-poem-search-form>
-@if (loading){
-<mat-spinner></mat-spinner> }@else { @if (error){
-<app-error-display [error]="error"></app-error-display>
-} @else {
-<app-poem-list [poems]="poems$ | async"></app-poem-list>
+<div class="page-container">
+  <div class="content-container">
+    <div class="poem-form-container">
+      <h1>Discover Poetry</h1>
 
-} }
+      <app-poem-search-form
+        [ngClass]="{ 'form-top': hasContent }"
+        (poemsRetrieved)="onPoemsRetrieved($event)"
+        (loading)="onLoading($event)"
+        (error)="onError($event)"
+      ></app-poem-search-form>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="results-container">
+      @if (loading){
+      <mat-spinner></mat-spinner> }@else { @if (error){
+      <app-error-display [error]="error"></app-error-display>
+      } @else {
+      <app-poem-list [poems]="poems$ | async"></app-poem-list>
+
+      } }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,57 @@
+mat-expansion-panel {
+  margin: 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  padding-right: 15px; // Added padding to prevent icon overflow
+}
+
+mat-expansion-panel-header {
+  background-color: var(--background-color);
+  padding: 10px 15px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+mat-panel-title {
+  font-size: 1em;
+  font-weight: bold;
+  line-height: 90%;
+}
+
+mat-panel-description {
+  font-size: 0.8em;
+  color: var(--text-color);
+}
+
+mat-icon {
+  color: var(--secondary-color);
+}
+
+p {
+  margin: 0;
+  padding: 10px 15px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  mat-expansion-panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  mat-panel-title,
+  mat-panel-description {
+    font-size: .8em;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    line-height: 1.1;
+  }
+
+  mat-icon {
+    margin-left: 0;
+    margin-top: 5px;
+  }
+}

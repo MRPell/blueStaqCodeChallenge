@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
-import { Poem, AuthorResponse, TitleResponse } from './models';
+import { catchError, map, tap } from 'rxjs/operators';
+import { Poem, AuthorResponse, TitleResponse, SearchRequest, poemField, SearchRequestBuilder, createSearchCriteria } from './models';
 import { ErrorObject } from '../../shared/error-display/error-display.component';
+import { LogService } from '../../shared/log.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,7 +12,7 @@ import { ErrorObject } from '../../shared/error-display/error-display.component'
 export class PoetryService {
   private readonly apiUrl = 'https://poetrydb.org';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private logger: LogService) { }
 
   /**
    * Retrieves a list of authors.
@@ -49,44 +50,65 @@ export class PoetryService {
   }
 
   /**
-   * Fetches poems based on the provided title and/or author.
-   * @param filters - An object containing optional title and author properties.
-   * @returns An Observable of an array of Poem objects.
-   * @throws Error if neither title nor author is provided.
+   * Searches for poems based on the specified search request.
+   *
+   * This method constructs a search query from the given search request and fetches
+   * the corresponding poems. The search request must contain valid search terms
+   * for each specified field.
+   *
+   * @param searchRequest - An object containing the search parameters, including
+   *                        poemSearches, which is an array of search criteria.
+   *                        Each search criterion must have a non-empty searchTerm
+   *                        or be entirely omitted.
+   *
+   * @returns An Observable that emits an array of Poem objects matching the search criteria.
+   *
+   * @throws Error if the search request contains mismatched fields and search terms.
+   *               For example, if fields are specified without corresponding search terms.
    */
-  getPoemsByFilters(filters: { title?: string; author?: string }): Observable<Poem[]> {
-    const { title, author } = filters;
-    if (!title && !author) {
-      throw new Error('At least one parameter (title or author) must be provided.');
+  searchPoems(searchRequest: SearchRequest): Observable<Poem[]> {
+    const isValidSearch = searchRequest.poemSearches.every((r) => r.searchTerm?.length ?? 0 > 0) || searchRequest.poemSearches.every((r) => !r.searchTerm);
+    if (!isValidSearch) {
+      throw new Error('Comma delimited fields must have corresponding semicolon delimited search terms, eg. /title,author/Winter;Shakespeare');
     }
 
-    const endpoint = this.createEndpoint(title, author);
-    const params = this.createParams(title, author);
+    const endpoint = this.createEndpoint(searchRequest);
+    const search = this.createSearch(searchRequest);
+    const outputs = this.createOutputs(searchRequest);
 
-    return this.fetchPoems(endpoint, params);
+    return this.fetchPoems(endpoint, search, outputs, searchRequest.format);
   }
 
-  private createEndpoint(title?: string, author?: string): string {
-    return [title && 'title', author && 'author'].filter(Boolean).join(',');
+  private createOutputs(searchRequest: SearchRequest): string | null {
+    return searchRequest.outputFields ? [...searchRequest.outputFields].join(',') : null;
   }
 
-  private createParams(title?: string, author?: string): Record<string, string> {
-    return { ...(title && { title }), ...(author && { author }) };
+  private createEndpoint(searchRequest: SearchRequest): string {
+    return searchRequest.poemSearches.map(s => s.input.toString()).join(',');
   }
 
-  private fetchPoems(endpoint: string, params: Record<string, string>): Observable<Poem[]> {
-    const queryString = this.buildQueryString(params);
+  private createSearch(searchRequest: SearchRequest): string | null {
+    const hasSearchTerms = searchRequest.poemSearches.some(s => s.searchTerm?.length ?? 0 > 0);
+    return hasSearchTerms ? searchRequest.poemSearches.map(s => `${s.searchTerm}${s.exact ? ':abs' : ''}`).join(';') : null;
+  }
 
-    return this.http.get<Poem[]>(`${this.apiUrl}/${endpoint}/${queryString}`).pipe(
+  private fetchPoems(endpoint: string, search: string | null, outputs: string | null, format: string = '.json'): Observable<Poem[]> {
+
+    return this.http.get<Poem[]>(this.buildUrl(endpoint, search, outputs, format)).pipe(
       map(this.validateResponse),
       catchError(this.handleError)
     );
   }
 
-  private buildQueryString(params: Record<string, string>): string {
-    return Object.values(params)
-      .map(encodeURIComponent)
-      .join(';');
+  private buildUrl(endpoint: string, search: string | null, outputs: string | null, format: string): string {
+    let url = `${this.apiUrl}/${endpoint}`;
+    if (search) {
+      url += `/${search}`;
+    }
+    if (outputs) {
+      url += `/${outputs}.${format}`;
+    }
+    return `${url}`;
   }
 
   private validateResponse<T extends object>(response: T): T {

@@ -20,7 +20,9 @@
     >
       <mat-icon>close</mat-icon>
     </button>
-    <mat-error *ngIf="!authorControl.valid">Not an available author</mat-error>
+    <mat-error *ngIf="authorControl.invalid"
+      >No available authors match {{ authorControl.value }}</mat-error
+    >
     <mat-autocomplete #auto="matAutocomplete">
       @for (option of filteredAuthorOptions$ | async; track option) {
       <mat-option [value]="option">{{ option }}</mat-option>
@@ -48,9 +50,13 @@
     >
       <mat-icon>close</mat-icon>
     </button>
-    <mat-error *ngIf="!titleControl.valid">
-      This title is not available
-      {{ authorControl.valid ? "for " + authorControl.value : "" }}
+    <mat-error *ngIf="titleControl.invalid">
+      The title {{ titleControl.value }} is not available
+      {{
+        authorControl.valid && authorControl.value
+          ? "for " + authorControl.value
+          : ""
+      }}
     </mat-error>
     <mat-autocomplete #autoPoemTitle="matAutocomplete">
       @for (mapEntry of filteredPoemTitleOptions$ | async | keyvalue; track
